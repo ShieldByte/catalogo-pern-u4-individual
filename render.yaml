@@ -1,0 +1,18 @@
+# Blueprint de Render (HU05). Un solo servicio web: Express sirve la API y la compilación de React.
+services:
+  - type: web
+    name: catalogo-pern-u4-individual
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # se pega a mano: la cadena de conexión de Neon
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ARCJET_KEY
+        sync: false # opcional
