@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PackageOpen, Plus, RefreshCw } from "lucide-react";
 import { useProductStore } from "../store/useProductStore";
 import ProductCard from "../components/ProductCard";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import AddProductModal, { ADD_MODAL_ID } from "../components/AddProductModal";
 
 export default function HomePage() {
-  const { products, loading, error, fetchProducts } = useProductStore();
+  const { products, loading, error, fetchProducts, deleteProduct } = useProductStore();
+  const [toDelete, setToDelete] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -26,6 +28,14 @@ export default function HomePage() {
       </div>
 
       <AddProductModal />
+      <ConfirmDeleteModal
+        product={toDelete}
+        onCancel={() => setToDelete(null)}
+        onConfirm={async () => {
+          await deleteProduct(toDelete.id);
+          setToDelete(null);
+        }}
+      />
 
       {error && <div role="alert" className="alert alert-error mb-6">{error}</div>}
 
@@ -42,7 +52,7 @@ export default function HomePage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onDelete={setToDelete} />
           ))}
         </div>
       )}

@@ -29,6 +29,15 @@ function createProductsController(productsRepo) {
       res.status(200).json({ success: true, data: toProductDTO(updated) });
     },
 
+    // DELETE /api/products/:id
+    async deleteProduct(req, res) {
+      const id = idParamSchema.safeParse(req.params.id);
+      if (!id.success) return badId(res);
+      const deleted = await productsRepo.remove(id.data);
+      if (!deleted) return notFound(res);
+      res.status(200).json({ success: true, data: toProductDTO(deleted) });
+    },
+
     // POST /api/products (req.body ya fue validado con Zod)
     async createProduct(req, res) {
       const created = await productsRepo.create(req.body);

@@ -12,6 +12,7 @@ function createProductsRouter(productsRepo) {
   router.post("/", validateBody(productInputSchema), controller.createProduct);
   router.get("/:id", controller.getProduct);
   router.put("/:id", validateBody(productInputSchema), controller.updateProduct);
+  router.delete("/:id", controller.deleteProduct);
 
   return router;
 }

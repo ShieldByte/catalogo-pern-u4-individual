@@ -60,6 +60,19 @@ export const useProductStore = create((set, get) => ({
     }
   },
 
+  deleteProduct: async (id) => {
+    try {
+      await api.delete(`/products/${id}`);
+      set((state) => ({ products: state.products.filter((p) => p.id !== id) }));
+      toast.success("Producto eliminado");
+      return true;
+    } catch (err) {
+      toast.error(errorMessage(err, "No se pudo eliminar el producto"));
+      await get().fetchProducts();
+      return false;
+    }
+  },
+
   // Convierte los errores de Zod que devuelve la API en { campo: mensaje }
   applyValidationErrors: (err) => {
     const errors = {};
