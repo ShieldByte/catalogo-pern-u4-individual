@@ -7,6 +7,7 @@ const emptyForm = { name: "", price: "", image: "" };
 // Estado compartido del catálogo entre componentes.
 export const useProductStore = create((set, get) => ({
   products: [],
+  currentProduct: null,
   loading: false,
   error: null,
 
@@ -26,6 +27,36 @@ export const useProductStore = create((set, get) => ({
       set({ error: errorMessage(err, "No se pudo cargar el catálogo"), products: [] });
     } finally {
       set({ loading: false });
+    }
+  },
+
+  fetchProduct: async (id) => {
+    set({ loading: true, error: null, currentProduct: null });
+    try {
+      const { data } = await api.get(`/products/${id}`);
+      const p = data.data;
+      set({ currentProduct: p, formData: { name: p.name, price: String(p.price), image: p.image }, formErrors: {} });
+    } catch (err) {
+      set({ error: errorMessage(err, "No se pudo cargar el producto") });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  updateProduct: async (id) => {
+    set({ saving: true, formErrors: {} });
+    try {
+      const { formData } = get();
+      const { data } = await api.put(`/products/${id}`, { ...formData, price: Number(formData.price) });
+      set({ currentProduct: data.data });
+      toast.success("Cambios guardados");
+      return true;
+    } catch (err) {
+      get().applyValidationErrors(err);
+      toast.error(errorMessage(err, "No se pudieron guardar los cambios"));
+      return false;
+    } finally {
+      set({ saving: false });
     }
   },
 
