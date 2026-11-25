@@ -1,12 +1,15 @@
-import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { useProductStore } from "../store/useProductStore";
 import ProductForm from "../components/ProductForm";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { currentProduct, loading, error, fetchProduct, updateProduct, resetForm } = useProductStore();
+  const navigate = useNavigate();
+  const { currentProduct, loading, error, fetchProduct, updateProduct, deleteProduct, resetForm } = useProductStore();
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     fetchProduct(id);
@@ -36,10 +39,22 @@ export default function ProductPage() {
             <div className="card-body">
               <h1 className="card-title text-2xl mb-2">Editar producto</h1>
               <ProductForm submitLabel="Guardar cambios" onSubmit={() => updateProduct(id)} />
+              <div className="divider my-2" />
+              <button className="btn btn-outline btn-error" onClick={() => setConfirming(true)}>
+                <Trash2 className="size-4" /> Eliminar producto
+              </button>
             </div>
           </div>
         </div>
       )}
+      <ConfirmDeleteModal
+        product={confirming ? currentProduct : null}
+        onCancel={() => setConfirming(false)}
+        onConfirm={async () => {
+          setConfirming(false);
+          if (await deleteProduct(currentProduct.id)) navigate("/");
+        }}
+      />
     </main>
   );
 }
