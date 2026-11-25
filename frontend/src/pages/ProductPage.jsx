@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useProductStore } from "../store/useProductStore";
+import { useAuthStore } from "../store/useAuthStore";
+
+const formatoPrecio = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
 import ProductForm from "../components/ProductForm";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
@@ -10,6 +13,7 @@ export default function ProductPage() {
   const navigate = useNavigate();
   const { currentProduct, loading, error, fetchProduct, updateProduct, deleteProduct, resetForm } = useProductStore();
   const [confirming, setConfirming] = useState(false);
+  const isAdmin = useAuthStore((s) => s.user?.role === "admin");
 
   useEffect(() => {
     fetchProduct(id);
@@ -37,12 +41,24 @@ export default function ProductPage() {
           </div>
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body">
-              <h1 className="card-title text-2xl mb-2">Editar producto</h1>
-              <ProductForm submitLabel="Guardar cambios" onSubmit={() => updateProduct(id)} />
-              <div className="divider my-2" />
-              <button className="btn btn-outline btn-error" onClick={() => setConfirming(true)}>
-                <Trash2 className="size-4" /> Eliminar producto
-              </button>
+              {isAdmin ? (
+                <>
+                  <h1 className="card-title text-2xl mb-2">Editar producto</h1>
+                  <ProductForm submitLabel="Guardar cambios" onSubmit={() => updateProduct(id)} />
+                  <div className="divider my-2" />
+                  <button className="btn btn-outline btn-error" onClick={() => setConfirming(true)}>
+                    <Trash2 className="size-4" /> Eliminar producto
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h1 className="card-title text-2xl">{currentProduct.name}</h1>
+                  <p className="text-2xl font-semibold text-primary">{formatoPrecio.format(currentProduct.price)}</p>
+                  <div role="alert" className="alert alert-info alert-soft mt-4 text-sm">
+                    <Link to="/login" className="link">Inicia sesión como administrador</Link> para editar o eliminar este producto.
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
