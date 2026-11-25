@@ -1,0 +1,11 @@
+{
+  "name": "catalogo-pern-u4-individual",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Catálogo de productos con PostgreSQL, Express, React y Node.js (Unidad 4, versión individual)",
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend",
+    "test": "npm test --prefix backend"
+  }
+}
