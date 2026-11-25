@@ -7,6 +7,15 @@ function createMemoryProductsRepository(initial = []) {
     async findAll() {
       return [...rows].sort((a, b) => b.id - a.id);
     },
+    async findById(id) {
+      return rows.find((r) => r.id === id) ?? null;
+    },
+    async update(id, { name, price, image }) {
+      const row = rows.find((r) => r.id === id);
+      if (!row) return null;
+      Object.assign(row, { name, price: String(price), image });
+      return row;
+    },
     async create({ name, price, image }) {
       const row = { id: nextId++, name, price: String(price), image, created_at: new Date().toISOString() };
       rows.push(row);
