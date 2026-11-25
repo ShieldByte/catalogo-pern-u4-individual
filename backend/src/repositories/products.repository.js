@@ -20,6 +20,11 @@ function createProductsRepository(db) {
       return rows[0] ?? null;
     },
 
+    async remove(id) {
+      const rows = await db.query(`DELETE FROM products WHERE id = $1 RETURNING ${COLUMNS}`, [id]);
+      return rows[0] ?? null;
+    },
+
     async create({ name, price, image }) {
       const rows = await db.query(
         `INSERT INTO products (name, price, image) VALUES ($1, $2, $3) RETURNING ${COLUMNS}`,
