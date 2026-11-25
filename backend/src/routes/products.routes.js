@@ -10,6 +10,8 @@ function createProductsRouter(productsRepo) {
 
   router.get("/", controller.getProducts);
   router.post("/", validateBody(productInputSchema), controller.createProduct);
+  router.get("/:id", controller.getProduct);
+  router.put("/:id", validateBody(productInputSchema), controller.updateProduct);
 
   return router;
 }

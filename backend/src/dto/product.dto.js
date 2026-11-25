@@ -19,6 +19,9 @@ const productInputSchema = z.object({
     .pipe(z.url({ protocol: /^https?$/, error: "La imagen debe ser una URL http o https" })),
 });
 
+// Parámetro :id de la URL: entero positivo.
+const idParamSchema = z.coerce.number().int().positive();
+
 // DTO de salida: define qué campos de un producto cruzan la interfaz HTTP.
 function toProductDTO(row) {
   return {
@@ -30,4 +33,4 @@ function toProductDTO(row) {
   };
 }
 
-module.exports = { productInputSchema, toProductDTO };
+module.exports = { productInputSchema, idParamSchema, toProductDTO };
