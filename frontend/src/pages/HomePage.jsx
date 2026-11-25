@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PackageOpen, Plus, RefreshCw } from "lucide-react";
 import { useProductStore } from "../store/useProductStore";
+import { useAuthStore } from "../store/useAuthStore";
 import ProductCard from "../components/ProductCard";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import AddProductModal, { ADD_MODAL_ID } from "../components/AddProductModal";
@@ -8,6 +9,7 @@ import AddProductModal, { ADD_MODAL_ID } from "../components/AddProductModal";
 export default function HomePage() {
   const { products, loading, error, fetchProducts, deleteProduct } = useProductStore();
   const [toDelete, setToDelete] = useState(null);
+  const isAdmin = useAuthStore((s) => s.user?.role === "admin");
 
   useEffect(() => {
     fetchProducts();
@@ -21,13 +23,15 @@ export default function HomePage() {
           <button className="btn btn-ghost btn-sm" onClick={fetchProducts} aria-label="Recargar">
             <RefreshCw className="size-4" /> Recargar
           </button>
-          <button className="btn btn-primary btn-sm" onClick={() => document.getElementById(ADD_MODAL_ID).showModal()}>
-            <Plus className="size-4" /> Agregar producto
-          </button>
+          {isAdmin && (
+            <button className="btn btn-primary btn-sm" onClick={() => document.getElementById(ADD_MODAL_ID).showModal()}>
+              <Plus className="size-4" /> Agregar producto
+            </button>
+          )}
         </div>
       </div>
 
-      <AddProductModal />
+      {isAdmin && <AddProductModal />}
       <ConfirmDeleteModal
         product={toDelete}
         onCancel={() => setToDelete(null)}
@@ -52,7 +56,7 @@ export default function HomePage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} onDelete={setToDelete} />
+            <ProductCard key={product.id} product={product} canEdit={isAdmin} onDelete={setToDelete} />
           ))}
         </div>
       )}

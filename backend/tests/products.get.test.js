@@ -1,6 +1,5 @@
 const request = require("supertest");
-const { createApp } = require("../src/app");
-const { createMemoryProductsRepository } = require("./helpers/memoryRepos");
+const { crearAppDePrueba, admin } = require("./helpers/testApp");
 
 const dosProductos = [
   { id: 1, name: "Audífonos inalámbricos", price: "899.00", image: "https://example.com/a.jpg" },
@@ -9,7 +8,7 @@ const dosProductos = [
 
 describe("HU01 · GET /api/products", () => {
   test("con dos productos responde 200 y devuelve ambos", async () => {
-    const app = createApp({ productsRepo: createMemoryProductsRepository(dosProductos) });
+    const app = crearAppDePrueba(dosProductos).app;
 
     const res = await request(app).get("/api/products");
 
@@ -22,7 +21,7 @@ describe("HU01 · GET /api/products", () => {
   });
 
   test("convierte el precio a número en el DTO", async () => {
-    const app = createApp({ productsRepo: createMemoryProductsRepository(dosProductos) });
+    const app = crearAppDePrueba(dosProductos).app;
 
     const res = await request(app).get("/api/products");
 
@@ -30,7 +29,7 @@ describe("HU01 · GET /api/products", () => {
   });
 
   test("con la tabla vacía responde 200 con una lista vacía en data", async () => {
-    const app = createApp({ productsRepo: createMemoryProductsRepository([]) });
+    const app = crearAppDePrueba([]).app;
 
     const res = await request(app).get("/api/products");
 

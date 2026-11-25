@@ -32,3 +32,17 @@ function createMemoryProductsRepository(initial = []) {
 }
 
 module.exports = { createMemoryProductsRepository };
+
+function createMemoryUsersRepository(users = []) {
+  return {
+    async findByEmail(email) {
+      return users.find((u) => u.email === email) ?? null;
+    },
+    async findById(id) {
+      const u = users.find((x) => x.id === id);
+      return u ? { id: u.id, name: u.name, email: u.email, role: u.role } : null;
+    },
+  };
+}
+
+module.exports.createMemoryUsersRepository = createMemoryUsersRepository;
