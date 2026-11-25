@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { Pencil } from "lucide-react";
+
 const formatoPrecio = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
 
 export default function ProductCard({ product }) {
@@ -9,6 +12,11 @@ export default function ProductCard({ product }) {
       <div className="card-body p-4">
         <h2 className="card-title text-base">{product.name}</h2>
         <p className="text-lg font-semibold text-primary">{formatoPrecio.format(product.price)}</p>
+        <div className="card-actions justify-end mt-2">
+          <Link to={`/product/${product.id}`} className="btn btn-sm btn-outline btn-info">
+            <Pencil className="size-4" /> Editar
+          </Link>
+        </div>
       </div>
     </article>
   );
