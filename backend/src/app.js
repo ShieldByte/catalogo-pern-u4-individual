@@ -3,11 +3,13 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const { createProductsRouter } = require("./routes/products.routes");
+const { createAuthRouter } = require("./routes/auth.routes");
 const { notFoundApi, errorHandler } = require("./middleware/errorHandler");
 
 // createApp recibe sus dependencias (repositorios). Así las pruebas pueden usar
 // repositorios en memoria y la aplicación real usa PostgreSQL.
-function createApp({ productsRepo }) {
+function createApp({ productsRepo, usersRepo, jwtSecret }) {
+  if (!jwtSecret) throw new Error("Falta JWT_SECRET");
   const app = express();
 
   app.use(helmet());
@@ -16,7 +18,8 @@ function createApp({ productsRepo }) {
   if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 
   app.get("/api/health", (req, res) => res.json({ success: true, status: "ok" }));
-  app.use("/api/products", createProductsRouter(productsRepo));
+  app.use("/api/auth", createAuthRouter(usersRepo, { jwtSecret }));
+  app.use("/api/products", createProductsRouter(productsRepo, { jwtSecret }));
 
   app.use("/api", notFoundApi);
   app.use(errorHandler);
