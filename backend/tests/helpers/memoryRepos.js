@@ -16,6 +16,12 @@ function createMemoryProductsRepository(initial = []) {
       Object.assign(row, { name, price: String(price), image });
       return row;
     },
+    async remove(id) {
+      const row = rows.find((r) => r.id === id);
+      if (!row) return null;
+      rows = rows.filter((r) => r.id !== id);
+      return row;
+    },
     async create({ name, price, image }) {
       const row = { id: nextId++, name, price: String(price), image, created_at: new Date().toISOString() };
       rows.push(row);
